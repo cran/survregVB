@@ -1,0 +1,140 @@
+---
+title: "Using the survregVB Package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{survregVB}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: references.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa.csl
+---
+
+```{r pre,echo=FALSE,results='hide'}
+library(knitr)
+opts_chunk$set(warning = FALSE, message = FALSE, cache = FALSE)
+```
+
+# Overview of survregVB
+
+The `survregVB` function provides a fast and accessible solution for variational inference in accelerated failure time (AFT) models for right-censored survival times following a log-logistic distribution. It provides an efficient alternative to Markov chain Monte Carlo (MCMC) methods by implementing a mean-field variational Bayes (VB) algorithm for parameter estimation. The VB approach employs a coordinate ascent algorithm and incorporates a piecewise approximation technique when computing expectations to achieve conjugacy [@xian2024]. @Rcpp
+
+## The AFT Model
+
+The log-logistic AFT model without shared frailty is specified as follows for the $i^{th}$ subject in the sample, $i=1,...,n$ , $T_i$:
+
+$$
+log(T_i):=Y=X_i^T\beta+bz_i
+$$
+
+where $X_i$ is column vector of $p-1$ covariates and a constant one (i.e. $X_i=(1,x_i1,...,x_i(p-1))^T$), $\beta$ is a vector of coefficients for the covariates, $z_i$ is a random variable following a standard logistic distribution with scale parameter $b$.
+
+The `survregVB` function uses a Bayesian framework to obtain the optimal variational densities of parameters $\beta$ and $b$ by maximizing the evidence based lower bound (ELBO). To do so, we assume prior distributions:
+
+-   $\beta\sim\text{MVN}(\mu_0,\sigma_0^2I_{p*p})$, with precision $v_0=1/\sigma^2$, and
+
+-   $b\sim\text{Inverse-Gamma}(\alpha_0,\omega_0)$
+
+where $\mu_0,v_0,\alpha_0$ and $\omega_0$ are known hyperparameters. At the end of the model fitting process, `survregVB` obtains the approximated posterior distributions:
+
+-   $q^*(\beta)$, a $N_p(\mu,\Sigma)$ density function, and
+
+-   $q^*(b)$, an $\text{Inverse-Gamma}(\alpha,\omega)$ density function,
+
+where the parameters $\mu,\Sigma,\alpha$ and $\omega$ are obtained via the VB algorithm [@xian2024].
+
+### The AFT Model With Shared Frailty
+
+We can also use the `survregVB` function is to fit it a shared frailty log-logistic AFT regression model that accounts for intra-cluster correlation through a cluster-specific random intercept. For time $T_{ij}$ of the $j_{th}$ subject from the $i_{th}$ cluster in the sample, in a sample with $i=1,...,K$ clusters and $j=1,...,n_i$ subjects:
+
+$$
+\log(T_{ij})=\gamma_i+X_{ij}^T\beta+b\epsilon_{ij}
+$$
+
+where $X_{ij}$ is column vector of $p-1$ covariates and a constant one (i.e. $X_{ij}=(1,x_{ij1},...,x_{ij(p-1)})^T$), $\beta$ is a vector of coefficients, $\gamma_i$ is a random intercept for the $i^{th}$ cluster, $\epsilon_{ij}$ is a variable following a standard logistic distribution with scale parameter $b$.
+
+In addition to parameters $\beta$ and $b$, `survregVB` obtains the optimal variational densities of parameters $\sigma^2_\gamma$ (the frailty variance) and $\gamma_i$. In addition to $\beta$ and $b$, we assume prior distributions:
+
+-   $\gamma_i|\sigma^2_\gamma\mathop{\sim}\limits^{\mathrm{iid}}N(0,\sigma^2_\gamma)$, and
+
+-   $\sigma^2\sim\text{Inverse-Gamma}(\lambda_0,\eta_0)$,
+
+where $\mu_0,v_0,\alpha_0$, $\omega_0$, $\lambda_0$ and $\eta_0$ are known hyperparameters. At the end of the model fitting process, `survregVB`obtains the approximated posterior distribution,
+
+-   $q^*(\gamma_i)$, a $N(\tau^*_i,\sigma^{2*}_i)$ density function, and
+
+-   $q^*(\sigma^2_\gamma)$, an $\text{Inverse-Gamma}(\lambda^*,\eta^*)$ density function,
+
+where the parameters $\mu,\Sigma,\alpha,\omega,\tau_i, \sigma_i, \lambda$ and $\eta$ are obtained via the VB algorithm [@xian2024a].
+
+# Getting Started using survregVB
+
+First, we load the survregVB and survival libraries.
+
+```{r loadLibrary}
+library(survregVB)
+library(survival)
+```
+
+## Fitting the Model
+
+For the `dnase` data set included in the package, our goal is to fit it a log-logistic AFT regression model of the form:
+
+$$
+\log(T):=Y=\beta_0+\beta_1x_1+\beta_2x_2+bz
+$$ where `trt` ($x_1$, treatment, binary) and `fev` ($x_2$, forced expiratory volume, continuous) are the covariates of interest, and the right-censoring indicator is `infect` [@xian2024].
+
+The following fits the model with priors based off previous studies:
+
+```{r}
+fit <- survregVB(
+  formula = Surv(time, infect) ~ trt + fev,
+  data = dnase,
+  alpha_0 = 501,
+  omega_0 = 500,
+  mu_0 = c(4.4, 0.25, 0.04),
+  v_0 = 1,
+  max_iteration = 10000,
+  threshold = 0.0005,
+  na.action = na.omit
+)
+print(fit)
+summary(fit)
+```
+
+## Fitting a Model with Shared Frailty
+
+We will fit the `simulation_frailty` data set included in the package to a log-logistic AFT regression model with shared frailty. For the $j^{th}$ subject in the $i^{th}$ cluster, $i=1,...,K$ and $j=1,...,n_i$:
+
+$$
+\log(T_i):=Y_i=0.5+\beta_1x_{1i}+\beta_2x_{2i}+\gamma_i+b\epsilon_i
+$$
+
+The following fits the model with non-informative priors [@xian2024a]:
+
+```{r}
+fit_frailty <- survregVB(
+  formula = Surv(Time.15, delta.15) ~ x1 + x2,
+  data = simulation_frailty,
+  alpha_0 = 3,
+  omega_0 = 2,
+  mu_0 = c(0, 0, 0),
+  v_0 = 0.1,
+  lambda_0 = 3,
+  eta_0 = 2,
+  cluster = cluster,
+  max_iteration = 100,
+  threshold = 0.01
+)
+print(fit_frailty)
+summary(fit_frailty)
+```
+
+# Session info
+
+The following package and versions were used in the production of this vignette.
+
+```{r echo=FALSE}
+sessionInfo()
+```
+
+# References

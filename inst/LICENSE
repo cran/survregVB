@@ -1,0 +1,6 @@
+The dataset `dnase` is derived from `rhDNase` in the `survival` R package, which is licensed under 
+LGPL (≥ 2). Redistribution of this dataset follows the same terms.
+
+For more information, refer to the `survival` package:
+https://cran.r-project.org/package=survival
+

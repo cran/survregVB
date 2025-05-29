@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Using the survregVB Package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Using the survregVB Package</h1>
+
+
+
+<div id="overview-of-survregvb" class="section level1">
+<h1>Overview of survregVB</h1>
+<p>The <code>survregVB</code> function provides a fast and accessible
+solution for variational inference in accelerated failure time (AFT)
+models for right-censored survival times following a log-logistic
+distribution. It provides an efficient alternative to Markov chain Monte
+Carlo (MCMC) methods by implementing a mean-field variational Bayes (VB)
+algorithm for parameter estimation. The VB approach employs a coordinate
+ascent algorithm and incorporates a piecewise approximation technique
+when computing expectations to achieve conjugacy <span class="citation">(Xian et al., 2024b)</span>. <span class="citation">Eddelbuettel et al. (2025)</span></p>
+<div id="the-aft-model" class="section level2">
+<h2>The AFT Model</h2>
+<p>The log-logistic AFT model without shared frailty is specified as
+follows for the <span class="math inline">\(i^{th}\)</span> subject in
+the sample, <span class="math inline">\(i=1,...,n\)</span> , <span class="math inline">\(T_i\)</span>:</p>
+<p><span class="math display">\[
+log(T_i):=Y=X_i^T\beta+bz_i
+\]</span></p>
+<p>where <span class="math inline">\(X_i\)</span> is column vector of
+<span class="math inline">\(p-1\)</span> covariates and a constant one
+(i.e. <span class="math inline">\(X_i=(1,x_i1,...,x_i(p-1))^T\)</span>),
+<span class="math inline">\(\beta\)</span> is a vector of coefficients
+for the covariates, <span class="math inline">\(z_i\)</span> is a random
+variable following a standard logistic distribution with scale parameter
+<span class="math inline">\(b\)</span>.</p>
+<p>The <code>survregVB</code> function uses a Bayesian framework to
+obtain the optimal variational densities of parameters <span class="math inline">\(\beta\)</span> and <span class="math inline">\(b\)</span> by maximizing the evidence based lower
+bound (ELBO). To do so, we assume prior distributions:</p>
+<ul>
+<li><p><span class="math inline">\(\beta\sim\text{MVN}(\mu_0,\sigma_0^2I_{p*p})\)</span>,
+with precision <span class="math inline">\(v_0=1/\sigma^2\)</span>,
+and</p></li>
+<li><p><span class="math inline">\(b\sim\text{Inverse-Gamma}(\alpha_0,\omega_0)\)</span></p></li>
+</ul>
+<p>where <span class="math inline">\(\mu_0,v_0,\alpha_0\)</span> and
+<span class="math inline">\(\omega_0\)</span> are known hyperparameters.
+At the end of the model fitting process, <code>survregVB</code> obtains
+the approximated posterior distributions:</p>
+<ul>
+<li><p><span class="math inline">\(q^*(\beta)\)</span>, a <span class="math inline">\(N_p(\mu,\Sigma)\)</span> density function,
+and</p></li>
+<li><p><span class="math inline">\(q^*(b)\)</span>, an <span class="math inline">\(\text{Inverse-Gamma}(\alpha,\omega)\)</span>
+density function,</p></li>
+</ul>
+<p>where the parameters <span class="math inline">\(\mu,\Sigma,\alpha\)</span> and <span class="math inline">\(\omega\)</span> are obtained via the VB algorithm
+<span class="citation">(Xian et al., 2024b)</span>.</p>
+<div id="the-aft-model-with-shared-frailty" class="section level3">
+<h3>The AFT Model With Shared Frailty</h3>
+<p>We can also use the <code>survregVB</code> function is to fit it a
+shared frailty log-logistic AFT regression model that accounts for
+intra-cluster correlation through a cluster-specific random intercept.
+For time <span class="math inline">\(T_{ij}\)</span> of the <span class="math inline">\(j_{th}\)</span> subject from the <span class="math inline">\(i_{th}\)</span> cluster in the sample, in a sample
+with <span class="math inline">\(i=1,...,K\)</span> clusters and <span class="math inline">\(j=1,...,n_i\)</span> subjects:</p>
+<p><span class="math display">\[
+\log(T_{ij})=\gamma_i+X_{ij}^T\beta+b\epsilon_{ij}
+\]</span></p>
+<p>where <span class="math inline">\(X_{ij}\)</span> is column vector of
+<span class="math inline">\(p-1\)</span> covariates and a constant one
+(i.e. <span class="math inline">\(X_{ij}=(1,x_{ij1},...,x_{ij(p-1)})^T\)</span>),
+<span class="math inline">\(\beta\)</span> is a vector of coefficients,
+<span class="math inline">\(\gamma_i\)</span> is a random intercept for
+the <span class="math inline">\(i^{th}\)</span> cluster, <span class="math inline">\(\epsilon_{ij}\)</span> is a variable following a
+standard logistic distribution with scale parameter <span class="math inline">\(b\)</span>.</p>
+<p>In addition to parameters <span class="math inline">\(\beta\)</span>
+and <span class="math inline">\(b\)</span>, <code>survregVB</code>
+obtains the optimal variational densities of parameters <span class="math inline">\(\sigma^2_\gamma\)</span> (the frailty variance)
+and <span class="math inline">\(\gamma_i\)</span>. In addition to <span class="math inline">\(\beta\)</span> and <span class="math inline">\(b\)</span>, we assume prior distributions:</p>
+<ul>
+<li><p><span class="math inline">\(\gamma_i|\sigma^2_\gamma\mathop{\sim}\limits^{\mathrm{iid}}N(0,\sigma^2_\gamma)\)</span>,
+and</p></li>
+<li><p><span class="math inline">\(\sigma^2\sim\text{Inverse-Gamma}(\lambda_0,\eta_0)\)</span>,</p></li>
+</ul>
+<p>where <span class="math inline">\(\mu_0,v_0,\alpha_0\)</span>, <span class="math inline">\(\omega_0\)</span>, <span class="math inline">\(\lambda_0\)</span> and <span class="math inline">\(\eta_0\)</span> are known hyperparameters. At the
+end of the model fitting process, <code>survregVB</code>obtains the
+approximated posterior distribution,</p>
+<ul>
+<li><p><span class="math inline">\(q^*(\gamma_i)\)</span>, a <span class="math inline">\(N(\tau^*_i,\sigma^{2*}_i)\)</span> density
+function, and</p></li>
+<li><p><span class="math inline">\(q^*(\sigma^2_\gamma)\)</span>, an
+<span class="math inline">\(\text{Inverse-Gamma}(\lambda^*,\eta^*)\)</span>
+density function,</p></li>
+</ul>
+<p>where the parameters <span class="math inline">\(\mu,\Sigma,\alpha,\omega,\tau_i, \sigma_i,
+\lambda\)</span> and <span class="math inline">\(\eta\)</span> are
+obtained via the VB algorithm <span class="citation">(Xian et al.,
+2024a)</span>.</p>
+</div>
+</div>
+</div>
+<div id="getting-started-using-survregvb" class="section level1">
+<h1>Getting Started using survregVB</h1>
+<p>First, we load the survregVB and survival libraries.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(survregVB)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(survival)</span></code></pre></div>
+<div id="fitting-the-model" class="section level2">
+<h2>Fitting the Model</h2>
+<p>For the <code>dnase</code> data set included in the package, our goal
+is to fit it a log-logistic AFT regression model of the form:</p>
+<p><span class="math display">\[
+\log(T):=Y=\beta_0+\beta_1x_1+\beta_2x_2+bz
+\]</span> where <code>trt</code> (<span class="math inline">\(x_1\)</span>, treatment, binary) and
+<code>fev</code> (<span class="math inline">\(x_2\)</span>, forced
+expiratory volume, continuous) are the covariates of interest, and the
+right-censoring indicator is <code>infect</code> <span class="citation">(Xian et al., 2024b)</span>.</p>
+<p>The following fits the model with priors based off previous
+studies:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">survregVB</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">Surv</span>(time, infect) <span class="sc">~</span> trt <span class="sc">+</span> fev,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">data =</span> dnase,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">alpha_0 =</span> <span class="dv">501</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">omega_0 =</span> <span class="dv">500</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">mu_0 =</span> <span class="fu">c</span>(<span class="fl">4.4</span>, <span class="fl">0.25</span>, <span class="fl">0.04</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">v_0 =</span> <span class="dv">1</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">max_iteration =</span> <span class="dv">10000</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="at">threshold =</span> <span class="fl">0.0005</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="at">na.action =</span> na.omit</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">print</span>(fit)</span></code></pre></div>
+<pre><code>## Call:
+## survregVB(formula = Surv(time, infect) ~ trt + fev, data = dnase, 
+##     alpha_0 = 501, omega_0 = 500, mu_0 = c(4.4, 0.25, 0.04), 
+##     v_0 = 1, na.action = na.omit, max_iteration = 10000, threshold = 5e-04)
+## 
+## Posterior distributions of the regression coefficients (Beta):
+## mu=
+## (Intercept)         trt         fev 
+##      4.1124      0.4155      0.0213 
+## 
+## Sigma=
+##             (Intercept)   trt     fev
+## (Intercept)    0.036204 -0.01 &lt; 2e-16
+## trt           -0.010274  0.02 2.2e-05
+## fev           -0.000473  0.00 8.3e-06
+## 
+## Posterior distribution of the scale parameter (b):
+## alpha=  744   omega=  674.648 
+## 
+## ELBO=  -4857.094 
+## 
+## Number of iterations=  9 
+## 
+## n= 645</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div>
+<pre><code>## Call:
+## survregVB(formula = Surv(time, infect) ~ trt + fev, data = dnase, 
+##     alpha_0 = 501, omega_0 = 500, mu_0 = c(4.4, 0.25, 0.04), 
+##     v_0 = 1, na.action = na.omit, max_iteration = 10000, threshold = 5e-04)
+##             Value    SD 95% CI Lower 95% CI Upper
+## (Intercept) 4.112 0.190        3.739        4.485
+## trt         0.415 0.141        0.139        0.692
+## fev         0.021 0.003        0.016        0.027
+## scale       0.908 0.033        0.844        0.974
+## 
+## ELBO=  -4857.094 
+## 
+## Number of iterations=  9 
+## 
+## n= 645</code></pre>
+</div>
+<div id="fitting-a-model-with-shared-frailty" class="section level2">
+<h2>Fitting a Model with Shared Frailty</h2>
+<p>We will fit the <code>simulation_frailty</code> data set included in
+the package to a log-logistic AFT regression model with shared frailty.
+For the <span class="math inline">\(j^{th}\)</span> subject in the <span class="math inline">\(i^{th}\)</span> cluster, <span class="math inline">\(i=1,...,K\)</span> and <span class="math inline">\(j=1,...,n_i\)</span>:</p>
+<p><span class="math display">\[
+\log(T_i):=Y_i=0.5+\beta_1x_{1i}+\beta_2x_{2i}+\gamma_i+b\epsilon_i
+\]</span></p>
+<p>The following fits the model with non-informative priors <span class="citation">(Xian et al., 2024a)</span>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>fit_frailty <span class="ot">&lt;-</span> <span class="fu">survregVB</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">Surv</span>(Time<span class="fl">.15</span>, delta<span class="fl">.15</span>) <span class="sc">~</span> x1 <span class="sc">+</span> x2,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">data =</span> simulation_frailty,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">alpha_0 =</span> <span class="dv">3</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">omega_0 =</span> <span class="dv">2</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">mu_0 =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">v_0 =</span> <span class="fl">0.1</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">lambda_0 =</span> <span class="dv">3</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">eta_0 =</span> <span class="dv">2</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">cluster =</span> cluster,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">max_iteration =</span> <span class="dv">100</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">threshold =</span> <span class="fl">0.01</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="fu">print</span>(fit_frailty)</span></code></pre></div>
+<pre><code>## Call:
+## survregVB(formula = Surv(Time.15, delta.15) ~ x1 + x2, data = simulation_frailty, 
+##     alpha_0 = 3, omega_0 = 2, mu_0 = c(0, 0, 0), v_0 = 0.1, lambda_0 = 3, 
+##     eta_0 = 2, cluster = cluster, max_iteration = 100, threshold = 0.01)
+## 
+## Posterior distributions of the regression coefficients (Beta):
+## mu=
+## (Intercept)          x1          x2 
+##      -0.392       0.897       0.547 
+## 
+## Sigma=
+##             (Intercept)    x1     x2
+## (Intercept)      0.4765 -0.43 &lt;2e-16
+## x1              -0.4325  0.42 0.0062
+## x2              -0.0398  0.01 0.0612
+## 
+## Posterior distribution of the scale parameter (b):
+## alpha=  68   omega=  44.52189 
+## 
+## Posterior distribution of the random intercept (sigma_gamma squared):
+## lambda=  10.5   eta=  10.25464 
+## 
+## Posterior distributions of the random effects for each cluster (gamma):
+## tau=
+##      1      2      3      4      5      6      7      8      9     10     11 
+## -0.202  0.668  0.453  0.130  1.659  0.307  0.550  1.973 -1.121 -0.762 -0.519 
+##     12     13     14     15 
+## -0.662 -1.596 -0.812  0.393 
+## 
+## sigma=
+##     1     2     3     4     5     6     7     8     9    10    11    12    13 
+## 0.217 0.170 0.156 0.181 0.205 0.181 0.201 0.209 0.181 0.156 0.156 0.276 0.156 
+##    14    15 
+## 0.184 0.221 
+## 
+## ELBO=  -260 
+## 
+## Number of iterations=  12 
+## 
+## n= 75</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">summary</span>(fit_frailty)</span></code></pre></div>
+<pre><code>## Call:
+## survregVB(formula = Surv(Time.15, delta.15) ~ x1 + x2, data = simulation_frailty, 
+##     alpha_0 = 3, omega_0 = 2, mu_0 = c(0, 0, 0), v_0 = 0.1, lambda_0 = 3, 
+##     eta_0 = 2, cluster = cluster, max_iteration = 100, threshold = 0.01)
+##              Value     SD 95% CI Lower 95% CI Upper
+## (Intercept) -0.392  0.690       -1.745        0.961
+## x1           0.897  0.650       -0.376        2.171
+## x2           0.547  0.247        0.062        1.032
+## scale        0.665  0.082        0.516        0.831
+## frailty      1.079  0.376        0.501        1.804
+## 
+## ELBO=  -260 
+## 
+## Number of iterations=  12 
+## 
+## n= 75</code></pre>
+</div>
+</div>
+<div id="session-info" class="section level1">
+<h1>Session info</h1>
+<p>The following package and versions were used in the production of
+this vignette.</p>
+<pre><code>## R version 4.4.2 (2024-10-31)
+## Platform: aarch64-apple-darwin20
+## Running under: macOS Big Sur 11.6
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+## 
+## locale:
+## [1] C/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: America/Toronto
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] survival_3.8-3  survregVB_0.0.1 knitr_1.49     
+## 
+## loaded via a namespace (and not attached):
+##  [1] digest_0.6.37     R6_2.5.1          invgamma_1.1      fastmap_1.2.0    
+##  [5] Matrix_1.7-2      xfun_0.50         lattice_0.22-6    splines_4.4.2    
+##  [9] cachem_1.1.0      htmltools_0.5.8.1 rmarkdown_2.29    lifecycle_1.0.4  
+## [13] cli_3.6.3         bayestestR_0.15.2 grid_4.4.2        sass_0.4.9       
+## [17] jquerylib_0.1.4   compiler_4.4.2    rstudioapi_0.17.1 tools_4.4.2      
+## [21] evaluate_1.0.3    bslib_0.9.0       yaml_2.3.10       rlang_1.1.5      
+## [25] jsonlite_1.8.9    insight_1.0.2</code></pre>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
+<div id="ref-Rcpp" class="csl-entry">
+Eddelbuettel, D., Francois, R., Allaire, J., Ushey, K., Kou, Q.,
+Russell, N., Ucar, I., Bates, D., &amp; Chambers, J. (2025). <em>Rcpp:
+Seamless r and c++ integration</em>. <a href="https://CRAN.R-project.org/package=Rcpp">https://CRAN.R-project.org/package=Rcpp</a>
+</div>
+<div id="ref-xian2024a" class="csl-entry">
+Xian, C., Souza, C. P. E. de, He, W., Rodrigues, F. F., &amp; Tian, R.
+(2024a). <em>Fast variational bayesian inference for correlated survival
+data: An application to invasive mechanical ventilation duration
+analysis</em>. <a href="https://doi.org/10.48550/ARXIV.2408.00177">https://doi.org/10.48550/ARXIV.2408.00177</a>
+</div>
+<div id="ref-xian2024" class="csl-entry">
+Xian, C., Souza, C. P. E. de, He, W., Rodrigues, F. F., &amp; Tian, R.
+(2024b). Variational Bayesian analysis of survival data using a
+log-logistic accelerated failure time model. <em>Statistics and
+Computing</em>, <em>34</em>(2). <a href="https://doi.org/10.1007/s11222-023-10365-6">https://doi.org/10.1007/s11222-023-10365-6</a>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
