@@ -1,4 +1,4 @@
-29578aa1b1ed000f6b0d5b653ad34af0 *DESCRIPTION
+190e46c133324fd37e24ebbf446a08c8 *DESCRIPTION
 78187c6934f857116ec9c08020cf04bc *LICENSE
 3ae16343a9402d19a85373797a3f352a *NAMESPACE
 4a86886efd350abfa4f450db84e0906b *R/ELBO.R
@@ -20,7 +20,7 @@ b9f8457220e495fd25ab04377e91e8dd *data/lung_cancer.rda
 c057258107588d969fec6578aea09e0a *inst/LICENSE
 13d058c1a3a6a224c55dba96f63520d4 *inst/doc/survregVB.R
 c7d3942204549a60716d679f9441d91d *inst/doc/survregVB.Rmd
-9eb7eafb4e06925d00c977f5eb6fc108 *inst/doc/survregVB.html
+9ac4601529ee6cc02d413f916ce5f41b *inst/doc/survregVB.html
 0790a4aeb6449b24d3c2050c4d3c095c *man/Sigma_star.Rd
 5ac58f97355854c939f4cdf8db363610 *man/Sigma_star_cluster.Rd
 8fdb5d0fa1bd613019910c400313d427 *man/alpha_star.Rd
